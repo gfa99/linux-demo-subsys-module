@@ -9,10 +9,10 @@ obj-m += xxx_demo_device.o
 
 else
 
-MDIR      := $(PWD)
-KDIR      ?= /lib/modules/$(shell uname -r)/build
-ARCH      ?= $(shell uname -m | sed -e s/arm.*/arm/ -e s/aarch64.*/arm64/)
-HOST_ARCH ?= $(shell uname -m | sed -e s/arm.*/arm/ -e s/aarch64.*/arm64/)
+MDIR          := $(PWD)
+KDIR          ?= /lib/modules/$(shell uname -r)/build
+ARCH          ?= $(shell uname -m | sed -e s/arm.*/arm/ -e s/aarch64.*/arm64/)
+HOST_ARCH     ?= $(shell uname -m | sed -e s/arm.*/arm/ -e s/aarch64.*/arm64/)
 CROSS_COMPILE ?= aarch64-linux-gnu-
 
 ifneq  ($(HOST_ARCH), arm)
@@ -33,8 +33,17 @@ endif
 modules:
 	$(MAKE) -C $(KDIR) M=$(MDIR) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) modules
 
-modules_install:
-	$(MAKE) -C $(KDIR) M=$(MDIR) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) modules_install
+install_modules:
+	@insmod demo.ko
+	@insmod xxx_demo_driver.ko
+	@insmod xxx_demo_device.ko
+	@echo "modules install success"
+	@lsmod | grep demo
+
+uninstall_modules:
+	@rmmod xxx_demo_device
+	@rmmod xxx_demo_driver
+	@rmmod demo
 
 clean:
 	$(MAKE) -C $(KDIR) M=$(MDIR) clean
