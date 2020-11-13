@@ -1,7 +1,7 @@
-/*
+ï»¿/*
  * demo subsystem, proc interface
  *
-*/
+ */
 
 #include <linux/module.h>
 #include <linux/proc_fs.h>
@@ -18,11 +18,11 @@ static int demo_proc_show(struct seq_file *seq, void *offset)
 	struct demo_device *demo = seq->private;
 	const struct demo_class_ops *ops = demo->ops;
 
-	/* Êä³öÐèÒªµÄsubsys procÐÅÏ¢ */
+	/* è¾“å‡ºéœ€è¦çš„subsys procä¿¡æ¯ */
 	seq_printf(seq, "demo_com_data\t: %ld\n", demo->demo_data.text_data);
 	seq_printf(seq, "\n");
 
-	/* Êä³öÇý¶¯²ãprocÐÅÏ¢ */
+	/* è¾“å‡ºé©±åŠ¨å±‚procä¿¡æ¯ */
 	if (ops->proc)
 		err = ops->proc(demo->dev.parent, seq);
 
@@ -59,30 +59,25 @@ static const struct file_operations demo_proc_fops = {
 
 void demo_proc_add_device(struct demo_device *demo)
 {
-	/* ÎªÐÂ×¢²áµÄÉè±¸·ÖÅä proc */
+	/* ä¸ºæ–°æ³¨å†Œçš„è®¾å¤‡åˆ†é… proc */
 	proc_create_data(dev_name(&demo->dev), 0, demo_proc, &demo_proc_fops, demo);
 }
 
 void demo_proc_del_device(struct demo_device *demo)
 {
-	/* ×¢ÏúÉè±¸ proc */
+	/* æ³¨é”€è®¾å¤‡ proc */
 	remove_proc_entry(dev_name(&demo->dev), demo_proc);
 }
 
 void __init demo_proc_init(void)
 {
-	/* ´´½¨ demo proc Ä¿Â¼ */
+	/* åˆ›å»º demo proc ç›®å½• */
 	demo_proc = proc_mkdir("driver/demo", NULL);
 }
 
 void __exit demo_proc_exit(void)
 {
-	/* É¾³ý demo proc Ä¿Â¼ */
+	/* åˆ é™¤ demo proc ç›®å½• */
 	if (NULL != demo_proc)
 		proc_remove(demo_proc);
 }
-
-
-
-
-

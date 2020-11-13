@@ -1,7 +1,7 @@
 /*
  * demo subsystem, dev interface
  *
-*/
+ */
 
 #include <linux/module.h>
 #include <linux/sched.h>
@@ -13,7 +13,7 @@
 
 static dev_t demo_devt;
 
-#define DEMO_DEV_MAX	16			/* ×î´óÖ§³ÖÉè±¸Êı */
+#define DEMO_DEV_MAX	16			/* æœ€å¤§æ”¯æŒè®¾å¤‡æ•° */
 
 static int demo_dev_open(struct inode *inode, struct file *file)
 {
@@ -26,7 +26,7 @@ static int demo_dev_open(struct inode *inode, struct file *file)
 
 	file->private_data = demo;
 
-	/* µ÷ÓÃÇı¶¯²ã open ÊµÏÖ */
+	/* è°ƒç”¨é©±åŠ¨å±‚ open å®ç° */
 	err = ops->open ? ops->open(demo->dev.parent) : 0;
 	if (err == 0) {
 		spin_lock_irq(&demo->irq_lock);
@@ -49,11 +49,11 @@ static ssize_t demo_dev_read(struct file *file, char __user *buf, size_t count, 
 	unsigned long data;
 	ssize_t ret;
 
-	/* ¶Ô¶ÁÈ¡Êı¾İÁ¿½øĞĞ±£»¤ */
+	/* å¯¹è¯»å–æ•°æ®é‡è¿›è¡Œä¿æŠ¤ */
 	if (count != sizeof(unsigned int) && count < sizeof(unsigned long))
 		return -EINVAL;
 
-	/* µÈ´ıÊı¾İ¾ÍĞ÷ */
+	/* ç­‰å¾…æ•°æ®å°±ç»ª */
 	add_wait_queue(&demo->irq_queue, &wait);
 	do {
 		__set_current_state(TASK_INTERRUPTIBLE);
@@ -80,7 +80,7 @@ static ssize_t demo_dev_read(struct file *file, char __user *buf, size_t count, 
 	set_current_state(TASK_RUNNING);
 	remove_wait_queue(&demo->irq_queue, &wait);
 
-	/* ´ÓdomoÇı¶¯²ãÖĞ¶ÁÈ¡Êı¾İ²¢´«Êäµ½Ó¦ÓÃ²ã */
+	/* ä»domoé©±åŠ¨å±‚ä¸­è¯»å–æ•°æ®å¹¶ä¼ è¾“åˆ°åº”ç”¨å±‚ */
 	if (ret == 0) {
 		if (demo->ops->read_callback)
 			data = demo->ops->read_callback(demo->dev.parent,
@@ -102,10 +102,10 @@ static unsigned int demo_dev_poll(struct file *file, poll_table *wait)
 	struct demo_device *demo = file->private_data;
 	unsigned long data;
 
-	/* ¼ÓÈëµÈ´ı¶ÓÁĞ */
+	/* åŠ å…¥ç­‰å¾…é˜Ÿåˆ— */
 	poll_wait(file, &demo->irq_queue, wait);
 
-	/* ¶ÁÈ¡Êı¾İ²¢ÅĞ¶ÏÌõ¼şÊÇ·ñÂú×ã(Èô²»Âú×ã±¾µ÷ÓÃ½ø³Ì»áË¯Ãß) */
+	/* è¯»å–æ•°æ®å¹¶åˆ¤æ–­æ¡ä»¶æ˜¯å¦æ»¡è¶³(è‹¥ä¸æ»¡è¶³æœ¬è°ƒç”¨è¿›ç¨‹ä¼šç¡çœ ) */
 	data = demo->irq_data;
 
 	return (data != 0) ? (POLLIN | POLLRDNORM) : 0;
@@ -127,7 +127,7 @@ static long demo_dev_ioctl(struct file *file,
 	switch (cmd) {
 
 	case DEMO_IOCTL_SET:
-		/* ½ø³ÌÈ¨ÏŞÏŞÖÆ(¿ÉÑ¡), Ïê¼ûcapability.h */
+		/* è¿›ç¨‹æƒé™é™åˆ¶(å¯é€‰), è¯¦è§capability.h */
 		if (!capable(CAP_SYS_RESOURCE)) {
 			err = -EACCES;
 			goto done;
@@ -138,13 +138,13 @@ static long demo_dev_ioctl(struct file *file,
 		if (copy_from_user(&demo_ctl, uarg, sizeof(demo_ctl)))
 			return -EFAULT;
 
-		/* demo Ê¾ÀıÉèÖÃÃüÁîº¯Êı */
+		/* demo ç¤ºä¾‹è®¾ç½®å‘½ä»¤å‡½æ•° */
 		return demo_test_set(demo, &demo_ctl);
 		
 	case DEMO_IOCTL_GET:
 		mutex_unlock(&demo->ops_lock);
 
-		/* demo Ê¾Àı»ñÈ¡ÃüÁîº¯Êı */
+		/* demo ç¤ºä¾‹è·å–å‘½ä»¤å‡½æ•° */
 		err = demo_test_get(demo, &demo_ctl);
 		if (err < 0)
 			return err;
@@ -155,7 +155,7 @@ static long demo_dev_ioctl(struct file *file,
 		return err;
 		
 	default:
-		/* ³¢ÊÔÊ¹ÓÃÇı¶¯³ÌĞòµÄ ioctl ½Ó¿Ú */
+		/* å°è¯•ä½¿ç”¨é©±åŠ¨ç¨‹åºçš„ ioctl æ¥å£ */
 		if (ops->ioctl) {
 			err = ops->ioctl(demo->dev.parent, cmd, arg);
 			if (err == -ENOIOCTLCMD)
@@ -182,7 +182,7 @@ static int demo_dev_release(struct inode *inode, struct file *file)
 
 	/* do something while exit */
 
-	/* µ÷ÓÃÇı¶¯²ã release ÊµÏÖ */
+	/* è°ƒç”¨é©±åŠ¨å±‚ release å®ç° */
 	if (demo->ops->release)
 		demo->ops->release(demo->dev.parent);
 
@@ -213,7 +213,7 @@ void demo_dev_prepare(struct demo_device *demo)
 		return;
 	}
 
-	/* ×Ö·ûÉè±¸½á¹¹³õÊ¼»¯ */
+	/* å­—ç¬¦è®¾å¤‡ç»“æ„åˆå§‹åŒ– */
 	demo->dev.devt = MKDEV(MAJOR(demo_devt), demo->id);
 
 	cdev_init(&demo->char_dev, &demo_dev_fops);
@@ -223,7 +223,7 @@ void demo_dev_prepare(struct demo_device *demo)
 
 void demo_dev_add_device(struct demo_device *demo)
 {
-	/* ×¢²á×Ö·ûÉè±¸ */
+	/* æ³¨å†Œå­—ç¬¦è®¾å¤‡ */
 	if (cdev_add(&demo->char_dev, demo->dev.devt, 1))
 		dev_warn(&demo->dev, "%s: failed to add char device %d:%d\n",
 			demo->name, MAJOR(demo_devt), demo->id);
@@ -253,6 +253,3 @@ void __exit demo_dev_exit(void)
 	if (demo_devt)
 		unregister_chrdev_region(demo_devt, DEMO_DEV_MAX);
 }
-
-
-

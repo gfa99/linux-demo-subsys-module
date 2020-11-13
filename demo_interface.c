@@ -1,7 +1,7 @@
 /*
  * demo subsystem, interface functions
  *
-*/
+ */
 
 #include "demo.h"
 
@@ -21,7 +21,7 @@ int demo_test_set(struct demo_device *demo, struct demo_ctl_data *demo_ctl)
 		/* do somerhing */
 		demo->demo_data.text_data = demo_ctl->data;
 
-		/* µ÷ÓÃÇý¶¯²ã½Ó¿Ú */
+		/* è°ƒç”¨é©±åŠ¨å±‚æŽ¥å£ */
 		err = demo->ops->set_data(demo->dev.parent, demo_ctl);
 	}
 	mutex_unlock(&demo->ops_lock);
@@ -45,12 +45,10 @@ int demo_test_get(struct demo_device *demo, struct demo_ctl_data *demo_ctl)
 		/* do somerhing */
 		demo_ctl->data = demo->demo_data.text_data;
 
-		/* µ÷ÓÃÇý¶¯²ã½Ó¿Ú */
+		/* è°ƒç”¨é©±åŠ¨å±‚æŽ¥å£ */
 		err = demo->ops->get_data(demo->dev.parent, demo_ctl);
 	}
 	mutex_unlock(&demo->ops_lock);
 
 	return err;	
 }
-
-

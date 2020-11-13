@@ -1,7 +1,7 @@
 /*
  * Generic demo interface.
  *
-*/
+ */
 #ifndef _DEMO_MODULE_H_
 #define _DEMO_MODULE_H_
 
@@ -76,6 +76,4 @@ extern void devm_demo_device_unregister(struct device *dev,
 extern int demo_test_set(struct demo_device *demo, struct demo_ctl_data *demo_ctl);
 extern int demo_test_get(struct demo_device *demo, struct demo_ctl_data *demo_ctl);
 
-
 #endif /* _DEMO_MODULE_H_ */
-

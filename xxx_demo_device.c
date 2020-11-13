@@ -1,7 +1,7 @@
 /*
  * xxx demo device
  *
-*/
+ */
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -13,7 +13,7 @@
 
 static void demo_device_release(struct device *dev);
 
-/* demo platform设备 */
+/* demo platform璁惧 */
 static struct platform_device demo0_device = {
 	.name		= "xxx_demo_device",
 	.id		    = 0,
@@ -30,13 +30,13 @@ static struct platform_device demo1_device = {
 	}
 };
 
-/* demo 设备释放 */
+/* demo 璁惧閲婃斁 */
 static void demo_device_release(struct device *dev)
 {
 	return;
 }
 
-/* demo 设备加载 */
+/* demo 璁惧鍔犺浇 */
 static int __init demo_device_init(void)
 { 
 	
@@ -46,7 +46,7 @@ static int __init demo_device_init(void)
     return 0;
 }
 
-/* demo 设备卸载 */
+/* demo 璁惧鍗歌浇 */
 static void __exit demo_device_exit(void)
 {
 	printk(KERN_INFO "xxx demo device unregister\n");
@@ -56,6 +56,5 @@ static void __exit demo_device_exit(void)
 
 module_init(demo_device_init);
 module_exit(demo_device_exit);
-
 
 MODULE_LICENSE("GPL"); 

@@ -1,7 +1,7 @@
 /*
  * demo subsystem, sysfs interface
  *
-*/
+ */
 
 #include <linux/module.h>
 #include "demo.h"
@@ -60,7 +60,7 @@ demo_sysfs_show_demodata(struct device *dev, struct device_attribute *attr,
 	struct demo_device *demo = to_demo_device(dev);
 	ssize_t retval;
 
-	/* 输出子系统通用设备数据 */
+	/* 杈撳嚭瀛愮郴缁熼�氱敤璁惧鏁版嵁 */
 	retval = sprintf(buf, "%ld\n", demo->demo_data.text_data);
 
 	return retval;
@@ -80,7 +80,7 @@ demo_sysfs_set_demodata(struct device *dev, struct device_attribute *attr,
 	if (val >= 4096 || val == 0)
 		retval = -EINVAL;
 
-	/* 调用interface接口写入驱动数据 */
+	/* 璋冪敤interface鎺ュ彛鍐欏叆椹卞姩鏁版嵁 */
 	demo_ctl.data = (unsigned long)val;
 
 	retval = demo_test_set(demo, &demo_ctl);
@@ -94,10 +94,10 @@ void demo_sysfs_add_device(struct demo_device *demo)
 {
 	int err;
 
-	/* 条件判断 */
+	/* 鏉′欢鍒ゆ柇 */
 	/* do something */
 
-	/* 为需要的设备创建一些特殊的 sys 节点 */
+	/* 涓洪渶瑕佺殑璁惧鍒涘缓涓�浜涚壒娈婄殑 sys 鑺傜偣 */
 	err = device_create_file(&demo->dev, &dev_attr_demodata);
 	if (err)
 		dev_err(demo->dev.parent,
@@ -111,13 +111,6 @@ void demo_sysfs_del_device(struct demo_device *demo)
 
 void __init demo_sysfs_init(struct class *demo_class)
 {
-	/* 绑定通用sys节点，在注册设备时会依次生成 */
+	/* 缁戝畾閫氱敤sys鑺傜偣锛屽湪娉ㄥ唽璁惧鏃朵細渚濇鐢熸垚 */
 	demo_class->dev_groups = demo_groups;
 }
-
-
-
-
-
-
-

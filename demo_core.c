@@ -1,7 +1,7 @@
 /*
  * demo subsystem, base core
  *
-*/
+ */
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -32,7 +32,7 @@ struct demo_device *demo_device_register(const char *name, struct device *dev,
 	struct demo_device *demo;
 	int of_id = -1, id = -1, err;
 
-	/* »ñÈ¡IDºÅ */
+	/* è·å–IDå· */
 	if (dev->of_node)
 		of_id = of_alias_get_id(dev->of_node, "demo");
 	else if (dev->parent && dev->parent->of_node)
@@ -52,14 +52,14 @@ struct demo_device *demo_device_register(const char *name, struct device *dev,
 		}
 	}
 
-	/* ¿ªÊ¼·ÖÅäÄÚ´æ */
+	/* å¼€å§‹åˆ†é…å†…å­˜ */
 	demo = kzalloc(sizeof(struct demo_device), GFP_KERNEL);
 	if (demo == NULL) {
 		err = -ENOMEM;
 		goto exit_ida;
 	}
 
-	/* demo ½á¹¹³õÊ¼»¯ */
+	/* demo ç»“æ„åˆå§‹åŒ– */
 	demo->id = id;
 	demo->ops = ops;
 	demo->owner = owner;
@@ -74,7 +74,7 @@ struct demo_device *demo_device_register(const char *name, struct device *dev,
 	strlcpy(demo->name, name, DEMO_DEVICE_NAME_SIZE);
 	dev_set_name(&demo->dev, "demo%d", id);
 
-	/* ×Ö·ûÉè±¸³õÊ¼»¯ */
+	/* å­—ç¬¦è®¾å¤‡åˆå§‹åŒ– */
 	demo_dev_prepare(demo);
 
 	err = device_register(&demo->dev);
@@ -83,7 +83,7 @@ struct demo_device *demo_device_register(const char *name, struct device *dev,
 		goto exit_kfree;
 	}
 
-	/* ×Ö·ûÉè±¸¡¢sysfsÉè±¸ºÍprocÉè±¸×¢²áÌí¼Ó */
+	/* å­—ç¬¦è®¾å¤‡ã€sysfsè®¾å¤‡å’Œprocè®¾å¤‡æ³¨å†Œæ·»åŠ  */
 	demo_dev_add_device(demo);
 	demo_sysfs_add_device(demo);
 	demo_proc_add_device(demo);
@@ -148,7 +148,7 @@ struct demo_device *devm_demo_device_register(struct device *dev,
 	if (!ptr)
 		return ERR_PTR(-ENOMEM);
 
-	/* ×¢²á demo Éè±¸ */
+	/* æ³¨å†Œ demo è®¾å¤‡ */
 	demo = demo_device_register(name, dev, ops, owner);
 	if (!IS_ERR(demo)) {
 		*ptr = demo;
@@ -166,7 +166,7 @@ void devm_demo_device_unregister(struct device *dev, struct demo_device *demo)
 {
 	int res;
 
-	/* ×¢Ïú demo Éè±¸ */
+	/* æ³¨é”€ demo è®¾å¤‡ */
 	res = devres_release(dev, devm_demo_device_release,
 				devm_demo_device_match, demo);
 	
@@ -177,20 +177,20 @@ EXPORT_SYMBOL_GPL(devm_demo_device_unregister);
 
 static int __init demo_core_init(void)
 { 
-	/* ´´½¨ demo class */
+	/* åˆ›å»º demo class */
 	demo_class = class_create(THIS_MODULE, "demo");
 	if (IS_ERR(demo_class)) {
 		pr_err("couldn't create class\n");
 		return PTR_ERR(demo_class);
 	}
 
-	/* demo Éè±¸Çı¶¯³õÊ¼»¯ */
+	/* demo è®¾å¤‡é©±åŠ¨åˆå§‹åŒ– */
 	demo_dev_init();
 
-	/* demo proc³õÊ¼»¯ */
+	/* demo procåˆå§‹åŒ– */
 	demo_proc_init();
 	
-	/* demo sysfs³õÊ¼»¯ */
+	/* demo sysfsåˆå§‹åŒ– */
 	demo_sysfs_init(demo_class);
 
 	pr_info("demo subsys init success\n");	

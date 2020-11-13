@@ -1,7 +1,7 @@
 /*
  * xxx demo driver
  *
-*/
+ */
 
 
 #include <linux/module.h>
@@ -21,8 +21,6 @@ struct xxx_demo {
 	struct timer_list xxx_demo_timer;
 	unsigned long xxx_demo_data;
 };
-
-
 
 
 static int xxx_demo_open(struct device *dev)
@@ -127,18 +125,18 @@ static int xxx_demo_driver_probe(struct platform_device *pdev)
 	struct xxx_demo *xxx_demo = NULL;
 	int ret = 0;
 	
-	/* ÉêÇëÇý¶¯½á¹¹ÄÚ´æ²¢±£´æÎªplatformµÄË½ÓÐÊý¾Ý */
+	/* ç”³è¯·é©±åŠ¨ç»“æž„å†…å­˜å¹¶ä¿å­˜ä¸ºplatformçš„ç§æœ‰æ•°æ® */
 	xxx_demo = devm_kzalloc(&pdev->dev, sizeof(struct xxx_demo), GFP_KERNEL);
 	if (!xxx_demo)
 		return -ENOMEM;
 
 	platform_set_drvdata(pdev, xxx_demo);
 
-	/* »ñÈ¡Æ½Ì¨×ÊÔ´ */
+	/* èŽ·å–å¹³å°èµ„æº */
 	/* do something */
 
 	
-	/* Ö´ÐÐÇý¶¯Ïà¹Ø³õÊ¼»¯(°üÀ¨ÍâÉèÓ²¼þ¡¢Ëø¡¢¶ÓÁÐµÈ)*/
+	/* æ‰§è¡Œé©±åŠ¨ç›¸å…³åˆå§‹åŒ–(åŒ…æ‹¬å¤–è®¾ç¡¬ä»¶ã€é”ã€é˜Ÿåˆ—ç­‰)*/
 	xxx_demo->xxx_demo_data = 0;
 	/* do something */
 	init_timer(&xxx_demo->xxx_demo_timer);
@@ -147,7 +145,7 @@ static int xxx_demo_driver_probe(struct platform_device *pdev)
 	xxx_demo->xxx_demo_timer.expires = jiffies + HZ;
 	add_timer(&xxx_demo->xxx_demo_timer);
 
-	/* Ïò demo ×ÓÏµÍ³×¢²áÉè±¸ */
+	/* å‘ demo å­ç³»ç»Ÿæ³¨å†Œè®¾å¤‡ */
 	xxx_demo->demo = devm_demo_device_register(&pdev->dev, "xxx_demo",
 				&xxx_demo_ops, THIS_MODULE);
 	if (IS_ERR(xxx_demo->demo)) {
@@ -168,14 +166,14 @@ static int xxx_demo_driver_remove(struct platform_device *pdev)
 {
 	struct xxx_demo *xxx_demo = platform_get_drvdata(pdev);
 
-	/* Ö´ÐÐÇý¶¯Ïà¹ØÈ¥³õÊ¼»¯(°üÀ¨ÍâÉèÓ²¼þ¡¢Ëø¡¢¶ÓÁÐµÈ)*/
+	/* æ‰§è¡Œé©±åŠ¨ç›¸å…³åŽ»åˆå§‹åŒ–(åŒ…æ‹¬å¤–è®¾ç¡¬ä»¶ã€é”ã€é˜Ÿåˆ—ç­‰)*/
 	del_timer_sync(&xxx_demo->xxx_demo_timer);	
 	/* do something */
 
-	/* Ïò demo ×ÓÏµÍ³×¢ÏúÉè±¸ */
+	/* å‘ demo å­ç³»ç»Ÿæ³¨é”€è®¾å¤‡ */
 	devm_demo_device_unregister(&pdev->dev, xxx_demo->demo);
 
-	/* ÊÍ·ÅÇý¶¯½á¹¹ÄÚ´æ */
+	/* é‡Šæ”¾é©±åŠ¨ç»“æž„å†…å­˜ */
 	devm_kfree(&pdev->dev, xxx_demo);
 	
 	return 0;
