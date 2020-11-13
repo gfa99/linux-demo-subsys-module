@@ -6,10 +6,13 @@
 #include <linux/module.h>
 #include <linux/sched.h>
 
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+#include <linux/sched/signal.h> // fix "error: implicit declaration of function 'signal_pending'"
+#endif
 
 #include "demo.h"
 #include "demo_dev.h"
-#include "demo-core.h"
 
 static dev_t demo_devt;
 

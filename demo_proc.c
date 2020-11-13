@@ -8,7 +8,6 @@
 #include <linux/seq_file.h>
 
 #include "demo.h"
-#include "demo-core.h"
 
 struct proc_dir_entry *demo_proc = NULL;
 

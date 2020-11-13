@@ -13,6 +13,7 @@
 #include <linux/kmod.h>
 #include <linux/timer.h>
 #include <linux/of_platform.h>
+#include <linux/version.h>
 
 #include "demo.h"
 
@@ -109,7 +110,7 @@ struct demo_class_ops xxx_demo_ops = {
 };
 
 
-
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
 static void xxx_demo_time(unsigned long para)
 {
 	struct xxx_demo *xxx_demo = (struct xxx_demo *)para;
@@ -119,11 +120,22 @@ static void xxx_demo_time(unsigned long para)
 
 	mod_timer(&xxx_demo->xxx_demo_timer, jiffies + HZ);
 }
+#else
+static void xxx_demo_time(struct timer_list *t)
+{
+	printk("timer_callback: %s\n", __func__);
+
+    t->expires = jiffies + 500 * HZ/1000; // 500ms 运行一次
+    mod_timer(t, t->expires);             // 2.2 如果需要周期性执行任务，在定时器回调函数中添加 mod_timer
+}
+#endif
 
 static int xxx_demo_driver_probe(struct platform_device *pdev)
 {
 	struct xxx_demo *xxx_demo = NULL;
 	int ret = 0;
+
+	printk("xxx_demo_driver_probe\n");
 	
 	/* 申请驱动结构内存并保存为platform的私有数据 */
 	xxx_demo = devm_kzalloc(&pdev->dev, sizeof(struct xxx_demo), GFP_KERNEL);
@@ -139,11 +151,21 @@ static int xxx_demo_driver_probe(struct platform_device *pdev)
 	/* 执行驱动相关初始化(包括外设硬件、锁、队列等)*/
 	xxx_demo->xxx_demo_data = 0;
 	/* do something */
+	// 在4.15内核里，init_timer被移除了。需要换用新的timer_setup接口(https://stackoverflow.com/a/53842823)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0)
 	init_timer(&xxx_demo->xxx_demo_timer);
 	xxx_demo->xxx_demo_timer.function = xxx_demo_time;
 	xxx_demo->xxx_demo_timer.data = (unsigned long)xxx_demo;
 	xxx_demo->xxx_demo_timer.expires = jiffies + HZ;
 	add_timer(&xxx_demo->xxx_demo_timer);
+#else
+	// https://stackoverflow.com/questions/52978660/linux-timer-setup-function
+	// https://blog.csdn.net/hhhhhyyyyy8/article/details/102885037
+	// https://blog.csdn.net/qq_38907791/article/details/90083389
+	timer_setup(&xxx_demo->xxx_demo_timer, xxx_demo_time, 0); // 1. 初始化
+	xxx_demo->xxx_demo_timer.expires = jiffies + HZ;
+    add_timer(&xxx_demo->xxx_demo_timer);                     // 2.1 向内核中添加定时器
+#endif
 
 	/* 向 demo 子系统注册设备 */
 	xxx_demo->demo = devm_demo_device_register(&pdev->dev, "xxx_demo",
@@ -165,6 +187,8 @@ err:
 static int xxx_demo_driver_remove(struct platform_device *pdev)
 {
 	struct xxx_demo *xxx_demo = platform_get_drvdata(pdev);
+
+	printk("xxx_demo_driver_remove\n");
 
 	/* 执行驱动相关去初始化(包括外设硬件、锁、队列等)*/
 	del_timer_sync(&xxx_demo->xxx_demo_timer);	

@@ -8,17 +8,36 @@ obj-m += xxx_demo_driver.o
 obj-m += xxx_demo_device.o
 
 else
-	
-KDIR := /home/apple/raspberry/build/linux-rpi-4.1.y
-all:prepare
-	make -C $(KDIR) M=$(PWD) modules ARCH=arm CROSS_COMPILE=arm-bcm2708-linux-gnueabi-
-	cp *.ko ./release/	
-prepare:
-	cp /home/apple/win_share/driver_module_test/* ./
+
+MDIR      := $(PWD)
+KDIR      ?= /lib/modules/$(shell uname -r)/build
+ARCH      ?= $(shell uname -m | sed -e s/arm.*/arm/ -e s/aarch64.*/arm64/)
+HOST_ARCH ?= $(shell uname -m | sed -e s/arm.*/arm/ -e s/aarch64.*/arm64/)
+CROSS_COMPILE ?= aarch64-linux-gnu-
+
+ifneq  ($(HOST_ARCH), arm)
+  ifeq ($(ARCH), arm)
+   CROSS_COMPILE ?= arm-linux-gnueabihf-
+ endif
+endif
+ifneq  ($(HOST_ARCH), arm64)
+  ifeq ($(ARCH), arm64)
+   CROSS_COMPILE ?= aarch64-linux-gnu-
+  endif
+endif
+
+ifeq ($(HOST_ARCH),$(ARCH))
+CROSS_COMPILE :=
+endif
+
+modules:
+	$(MAKE) -C $(KDIR) M=$(MDIR) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) modules
+
 modules_install:
-	make -C $(KDIR) M=$(PWD) modules_install ARCH=arm CROSS_COMPILE=arm-bcm2708-linux-gnueabi-
+	$(MAKE) -C $(KDIR) M=$(MDIR) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) modules_install
+
 clean:
-	rm -f *.ko *.o *.mod.o *.mod.c *.symvers  modul*
-	rm -f ./release/*
+	$(MAKE) -C $(KDIR) M=$(MDIR) clean
+	@rm -f *.o.ur-safe
 
 endif

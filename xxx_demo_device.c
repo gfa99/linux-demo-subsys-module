@@ -38,9 +38,8 @@ static void demo_device_release(struct device *dev)
 
 /* demo 设备加载 */
 static int __init demo_device_init(void)
-{ 
-	
-	printk(KERN_INFO "xxx demo device register\n");
+{
+    printk(KERN_INFO "xxx demo device register\n");
     platform_device_register(&demo0_device);
     platform_device_register(&demo1_device);	
     return 0;
@@ -49,7 +48,7 @@ static int __init demo_device_init(void)
 /* demo 设备卸载 */
 static void __exit demo_device_exit(void)
 {
-	printk(KERN_INFO "xxx demo device unregister\n");
+    printk(KERN_INFO "xxx demo device unregister\n");
     platform_device_unregister(&demo0_device);
 	platform_device_unregister(&demo1_device);
 }

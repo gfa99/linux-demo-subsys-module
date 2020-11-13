@@ -5,7 +5,6 @@
 
 #include <linux/module.h>
 #include "demo.h"
-#include "demo-core.h"
 
 
 /* device attributes */
